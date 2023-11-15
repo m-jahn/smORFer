@@ -1,4 +1,5 @@
 # load library
+library(tidyverse)
 library(seqinr)
 library(Biostrings)
 
@@ -11,7 +12,7 @@ rpf <- read.table(get_param[1], sep = "\t", header = F, stringsAsFactors = F)
 u_genes <- unique(rpf[,1:6])
 
 # cutoff for selection of candidates: (FT at period 3) / (FT between 1.5 and 3) 
-cutoff <- 3
+cutoff <- 0
 
 ## function for fourier transform input counts
 # counts: input count
@@ -34,11 +35,11 @@ get_FT_signal = function(counts, normalize = T, full_output = F){
     # get identity of period 3 and 1.5 together with mean of inter-regions
     idx3 <- which(freq == 3)
     idx15 <- which(freq == 1.5)
-    res <- c(
-      ft[idx15],
-      ft[idx3],
-      mean(ft[(idx3+1):(idx15-1)]),
-      mean(ft[(idx15+1):(length(ft))])
+    res <- list(
+      ft15 = ft[idx15],
+      ft3 = ft[idx3],
+      mean_ftlower3 = mean(ft[(idx3+1):(idx15-1)]),
+      mean_fthigher3 = mean(ft[(idx15+1):(length(ft))])
     )
     # return
     if(!full_output){
@@ -60,39 +61,14 @@ get_FT_signal = function(counts, normalize = T, full_output = F){
 
 
 ### calculate FT for RPFs
-
-# store FT results
-storeFT <- matrix(NA, nrow=nrow(u_genes),ncol=4)
-# for each unique genes
-for(i in 1:nrow(u_genes)){
-  # status print status every 100 genes / ORFs
-  if(i == 1){
-    cat('Start obtaining FT signals\n')
-  }
-  if(i %% 100 == 0){
-    cat(paste0(i, ' genes/ORFs processed \n'))
-  }
-  # get counts for selected gene only
-  rpf_sel <- rpf[rpf[,4]==u_genes[i,4],]
-  # check if dividable by 3
-  if(nrow(rpf_sel)%%3 == 0){
-    # do FT transform (remove 50nt at start and end)
-    ft <- get_FT_signal(rpf_sel[,8])
-    storeFT[i,1:4] <- ft
-  } else {
-    # if not dividable by 3 print skipped
-    cat(paste0('  ',u_genes[i,4],' skipped\n'))
-  } 
-}
-cat('DONE\n')
-
-# select candidates with high FT at period 3
-idx <- which(storeFT[,2]/storeFT[,3] > cutoff) # this is the genes we would be interested
-
-# create table
-verified <- cbind(u_genes[idx,],round(storeFT[idx,2]/storeFT[idx,3], digits=6))
-colnames(verified)[7] <- 'FT_ratio'
+verified <- rpf %>%
+  as_tibble %>%
+  group_by(V1, V2, V3, V4, V5, V6) %>%
+  summarize(ft_result = list(get_FT_signal(V8))) %>%
+  tidyr::unnest_wider(ft_result) %>%
+  mutate(FT_ratio = ft3/mean_ftlower3) %>%
+  filter(FT_ratio > cutoff) %>%
+  select(-ft15, -ft3, -mean_ftlower3, -mean_fthigher3)
 
 # write candidates
 write.table(verified,paste0(get_param[2],'/output/RPF_3nt_translated.txt'), sep = "\t", col.names = F, row.names = F, quote = F)
-
