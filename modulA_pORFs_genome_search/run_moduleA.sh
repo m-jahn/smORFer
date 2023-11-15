@@ -30,9 +30,11 @@ script_path2="${script_path}/2_region_selection"
 # create output folder
 mkdir -p "${script_path2}/output"
 
-# get pORFs in non-annotated regions
-intersectBed -s -v -b $6 -a "${script_path1}/output/${3}.bed" > "${script_path2}/output/${3}_filtered.bed"
+# OMITTED: get pORFs in non-annotated regions
+#intersectBed -s -v -b $6 -a "${script_path1}/output/${3}.bed" > "${script_path2}/output/${3}_filtered.bed"
 
+# simply copy bed file to include ALL possible sORFs, also intragenic, overlapping etc.
+cp "${script_path1}/output/${3}.bed" "${script_path2}/output/${3}_filtered.bed"
 
 ### Step3
 # get script path

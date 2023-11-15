@@ -13,7 +13,7 @@ $bedFile = shift(@ARGV);#pORFs in bed format (6 columns)
 $minLength = shift(@ARGV);#min length to put (here we put 9 nt)
 $maxLength = shift(@ARGV);#max length to put (here we put 150 nt)
 
-@STA=("ATG","GTG","TTG","CTG"); #start codons
+@STA=("ATA","ATG","GTG","TTG"); #start codons
 @STO=("TGA","TAG","TAA"); #stop codons
 
 
