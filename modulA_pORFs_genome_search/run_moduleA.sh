@@ -12,15 +12,15 @@ script_path=$(dirname "$0")
 script_path1="${script_path}/1_pORF"
 
 # create output folder
-mkdir -p "${script_path1}/output"
+mkdir -p "${script_path1}/output/${6}"
 
 # predict small putative ORFs from genome including length restriction
-perl "${script_path1}/porf_bedformat.pl" $1 $2 "${script_path1}/output/${3}.txt" "${script_path1}/output/${3}.bed" $4 $5
+perl "${script_path1}/porf_bedformat.pl" $1 $2 "${script_path1}/output/${6}/putative_ORFs.txt" "${script_path1}/output/${6}/putative_ORFs.bed" $3 $4
 
 # parse output (remove header)
-sed '1d' "${script_path1}/output/${3}.bed" > "${script_path1}/output/${3}_noHead.bed"
-rm "${script_path1}/output/${3}.bed"
-mv "${script_path1}/output/${3}_noHead.bed" "${script_path1}/output/${3}.bed"
+sed '1d' "${script_path1}/output/${6}/putative_ORFs.bed" > "${script_path1}/output/${6}/putative_ORFs_noHead.bed"
+rm "${script_path1}/output/${6}/putative_ORFs.bed"
+mv "${script_path1}/output/${6}/putative_ORFs_noHead.bed" "${script_path1}/output/${6}/putative_ORFs.bed"
 
 
 ### Step2
@@ -28,21 +28,21 @@ mv "${script_path1}/output/${3}_noHead.bed" "${script_path1}/output/${3}.bed"
 script_path2="${script_path}/2_region_selection"
 
 # create output folder
-mkdir -p "${script_path2}/output"
+mkdir -p "${script_path2}/output/${6}"
 
 # OMITTED: get pORFs in non-annotated regions
-#intersectBed -s -v -b $6 -a "${script_path1}/output/${3}.bed" > "${script_path2}/output/${3}_filtered.bed"
+#intersectBed -s -v -b $5 -a "${script_path1}/output/${6}/putative_ORFs.bed" > "${script_path2}/output/${6}/putative_ORFs_filtered.bed"
 
 # simply copy bed file to include ALL possible sORFs, also intragenic, overlapping etc.
-cp "${script_path1}/output/${3}.bed" "${script_path2}/output/${3}_filtered.bed"
+cp "${script_path1}/output/${6}/putative_ORFs.bed" "${script_path2}/output/${6}/putative_ORFs_filtered.bed"
 
 ### Step3
 # get script path
 script_path3="${script_path}/3_FT_GCcontent"
 
 # create output folder
-mkdir -p "${script_path3}/output"
+mkdir -p "${script_path3}/output/${6}"
 
 # get FT candidates
-Rscript --vanilla "${script_path3}/FT_GCcontent.R" $1 "${script_path1}/output/${3}.bed" ${script_path3}
+Rscript --vanilla "${script_path3}/FT_GCcontent.R" $1 "${script_path1}/output/${6}/putative_ORFs.bed" "${script_path3}/output/${6}/FT_passed.bed"
 

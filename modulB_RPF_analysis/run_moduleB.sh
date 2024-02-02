@@ -12,30 +12,30 @@ script_path=$(dirname "$0")
 script_path1="${script_path}/4_count_RPF"
 
 # create output folder
-mkdir -p "${script_path1}/output"
+mkdir -p "${script_path1}/output/$4"
 
 # count per gene / pORF
-coverageBed -s -a $1 -b $2 > "${script_path1}/output/RPF_counts.txt"
+coverageBed -s -a $1 -b $2 > "${script_path1}/output/$4/RPF_counts.txt"
 
 # get candidates >= 5 RPF (validated)
-awk '$7 >= 5' "${script_path1}/output/RPF_counts.txt" > "${script_path1}/output/RPF_translated.txt"
+awk '$7 >= 5' "${script_path1}/output/$4/RPF_counts.txt" > "${script_path1}/output/$4/RPF_translated.txt"
 
 # OMITTED: get candidates > 100 RPK (100 RPK = 1 RPF per 10 nt length = 0.1)
 #awk '$7/$9 >= 0.1 {print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' "${script_path1}/output/RPF_counts.txt" > "${script_path1}/output/RPF_high.bed"
 
 # use >= 5 read count candidates for conversion to bed file
-awk '$7 >= 5 {print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' "${script_path1}/output/RPF_counts.txt" > "${script_path1}/output/RPF_high.bed"
+awk '$7 >= 5 {print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' "${script_path1}/output/$4/RPF_counts.txt" > "${script_path1}/output/$4/RPF_high.bed"
 
 ### Step5
 # get script path
 script_path2="${script_path}/5_FT_RPF"
 
 # create output folder
-mkdir -p "${script_path2}/output"
+mkdir -p "${script_path2}/output/$4"
 
 # count per nucleotide
-coverageBed -s -d -a "${script_path1}/output/RPF_high.bed" -b $3 > "${script_path2}/output/RPF_candidates_perNT.txt"
+coverageBed -s -d -a "${script_path1}/output/$4/RPF_high.bed" -b $3 > "${script_path2}/output/$4/RPF_candidates_perNT.txt"
 
 # get FT candidates
-Rscript --vanilla "${script_path2}/FT_RPF_mod.R" "${script_path2}/output/RPF_candidates_perNT.txt" ${script_path2}
+Rscript --vanilla "${script_path2}/FT_RPF_mod.R" "${script_path2}/output/$4/RPF_candidates_perNT.txt" ${script_path2}
 
