@@ -36,4 +36,4 @@ bed_new <- rbind(bed_p_f,bed_m_f)
 bed_new[bed_new[,2] < 0,2] <- 0
 
 # write results
-write.table(bed_new,paste0(get_param[2],'/output/start_codons.bed'),col.names = F, row.names = F, quote=F, sep='\t')
+write.table(bed_new, get_param[2], col.names = F, row.names = F, quote=F, sep='\t')

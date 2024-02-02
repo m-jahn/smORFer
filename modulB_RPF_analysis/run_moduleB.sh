@@ -37,5 +37,5 @@ mkdir -p "${script_path2}/output/$4"
 coverageBed -s -d -a "${script_path1}/output/$4/RPF_high.bed" -b $3 > "${script_path2}/output/$4/RPF_candidates_perNT.txt"
 
 # get FT candidates
-Rscript --vanilla "${script_path2}/FT_RPF_mod.R" "${script_path2}/output/$4/RPF_candidates_perNT.txt" ${script_path2}
+Rscript --vanilla "${script_path2}/FT_RPF.R" "${script_path2}/output/$4/RPF_candidates_perNT.txt" "${script_path2}/output/$4/RPF_3nt_translated.txt"
 

@@ -71,4 +71,4 @@ verified <- rpf %>%
   select(-ft15, -ft3, -mean_ftlower3, -mean_fthigher3)
 
 # write candidates
-write.table(verified,paste0(get_param[2],'/output/RPF_3nt_translated.txt'), sep = "\t", col.names = F, row.names = F, quote = F)
+write.table(verified, get_param[2], sep = "\t", col.names = F, row.names = F, quote = F)

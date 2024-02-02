@@ -11,10 +11,10 @@ script_path=$(dirname "$0")
 script_path1="${script_path}/7_get_start_codon"
 
 # create output folder
-mkdir -p "${script_path1}/output"
+mkdir -p "${script_path1}/output/${3}"
 
 # get start codons of ORFs
-Rscript --vanilla "${script_path1}/start_codon.R" $1 ${script_path1}
+Rscript --vanilla "${script_path1}/start_codon.R" $1 "${script_path1}/output/${3}/start_codons.bed"
 
 
 ### Step8
@@ -22,10 +22,10 @@ Rscript --vanilla "${script_path1}/start_codon.R" $1 ${script_path1}
 script_path2="${script_path}/8_count_TIS"
 
 # create output folder
-mkdir -p "${script_path2}/output"
+mkdir -p "${script_path2}/output/${3}"
 
 # count TIS reads per start counts for pORF
-coverageBed -s -a "${script_path1}/output/start_codons.bed" -b $2 > "${script_path2}/output/TIS_counts.txt"
+coverageBed -s -a "${script_path1}/output/${3}/start_codons.bed" -b $2 > "${script_path2}/output/${3}/TIS_counts.txt"
 
-awk '$7 >= 5' "${script_path2}/output/TIS_counts.txt" > "${script_path2}/output/TIS_candidates.txt"
+awk '$7 >= 5' "${script_path2}/output/${3}/TIS_counts.txt" > "${script_path2}/output/${3}/TIS_candidates.txt"
 
